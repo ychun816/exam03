@@ -4,73 +4,78 @@
  * - gnl()
  * 
  * @param
- * static char buffer[BUFFER_SIZE] : Static buffer to hold the content read from the file
- * char line[7000] : Line buffer to hold the current line being read (limited to 70000 chars)
- * static int buffer_read : Static variable to keep track of how many bytes were read into the buffer
- * static int buffer_pos : Static variable to track the current position in the buffer
- * int i;
+ * STATIC CHAR buffer[BUFFER_SIZE] : 
+ * - Static buffer to store chunks of data read from a file descriptor (fd)
+ * - The read system call fills this buffer with up to BUFFER_SIZE bytes from the file at a time.
+ * - The read function doesn’t always read the entire content of the file at once (especially for large files). 
+ *   So, this buffer holds the portion of the file currently being processed until the function needs more data.
+ * 
+ * CHAR line[7000] : 
+ * - This egular (non-static) array is used to store the line currently being read. 
+ * - The function copies characters from buffer into line until it finds a newline (\n) or reaches the end of the buffer.
+ * - Why 70000: The large size ensures that even very long lines can be stored without running out of space.
+ * 
+ * STATIC INT buffer_read : Static variable to keep track of how many bytes were read into the buffer
+ * STATIC INT buffer_pos : Static variable to track the current position in the buffer
+ * INT i;
  * 
  */
 
 #include "get_next_line.h"
-//strdup
+
 char *ft_strdup(char *s)
 {
-	char *dest;
 	int i = 0;
+	char *res;
 
 	while (s[i])
 		i++;
-	dest = (char *)malloc(sizeof(char) * (i + 1));
-	if (!dest)
+	res = (char *)malloc(sizeof(char) * (i + 1));
+	if (!res)
 		return (NULL);
 	i = 0;
 	while (s[i])
 	{
-		dest[i] = s[i];
+		res[i] = s[i];
 		i++;
 	}
-	dest[i] = '\0';
-	return (dest);
+	res[i] = '\0';
+	return (res);
 }
 
-//gnl
 char *get_next_line(int fd)
 {
-	static char buffer[BUFFER_SIZE];
-	static int buffer_read;
-	static int buffer_pos;
-	char line[70000];//reserves a fixed amount of memory (70,000 bytes) 
-	int i;
-	//char *line : dynamically allocate memory (like with malloc() -> This would require resizing (reallocating) memory 
+	int i = 0;
+	static char buf[BUFFER_SIZE];
+	static int buf_rd;
+	static int buf_pos;
+	char line[7000];
 
-	i = 0;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (1)// Start an infinite loop to read characters
+	while (1)
 	{
-		//checks when we’ve processed all characters in the buffer, indicating it’s time to read more data from the file.
-		if (buffer_pos >= buffer_read)
+		if (buf_pos >= buf_rd)
 		{
-			buffer_read = read(fd, buffer, BUFFER_SIZE);// Read more data from the file into the buffer
-			buffer_pos = 0;// Reset the buffer position
-			if (buffer_read <= 0)// If read() returns 0 or negative, break the loop (end of file or error)
+			buf_rd = read(fd, buf, BUFFER_SIZE);
+			buf_pos = 0;
+			if (buf_rd <= 0)
 				break ;
 		}
-		if (line[i] == '\n') // Stop reading when encountering a newline character
+		if (line[i - 1] == '\n')
 			break ;
-		line[i] = buffer[buffer_pos++];
-		i++;	
+		line[i] = buf[buf_pos++];
+		i++;
 	}
 	line[i] = '\0';
-	if (i == 0)//i == 0 -> no charactes copied frm the file
+	if (i == 0)
 		return (NULL);
 	return (ft_strdup(line));
 }
 
+#include <stdio.h>
 int main()
 {
-    int fd = open("./txt.txt", O_RDONLY);
-    printf("%s", get_next_line(fd));
-    return (0);
+	int fd = open("./test.txt", BUFFER_SIZE);
+	printf("%s", get_next_line(fd));
 }
