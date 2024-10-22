@@ -49,6 +49,32 @@ int    ft_printf(const char *format, ...)
     return (va_end(pointer), length);
 }
 
+#include <stdio.h>
+int main(void)
+{
+	ft_printf("%s! toto\n", "SuUuup");
+	ft_printf("%s is harder. But would win %d points\n", "The version 2", 100);
+	ft_printf("Hexdecimal is %s!!! like why input %d becomes %x? u know what: %s\n", "complicated", 255, 255, "Je m'en fous!");
+	printf("\n");
+	printf("=============================================================\n");
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("hello"), ft_printf("hello"));
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("%s", "hello"), ft_printf("%s", "hello"));
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("%d", 42), ft_printf("%d", 42));
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("%d", -424), ft_printf("%d", -424));
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("%x", 0), ft_printf("%x", 0));
+	printf("\n");
+	printf(" ||| REAL : %d | FT : %d", printf("%x", 255), ft_printf("%x", 255));
+	printf("\n");
+	printf("\n");
+    return 0;
+}
+
+/* ==== TEST MAIN B ====
 int main(void)
 {
     int len;
@@ -75,3 +101,4 @@ int main(void)
 
     return 0;
 }
+*/
