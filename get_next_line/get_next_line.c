@@ -62,10 +62,9 @@ char *get_next_line(int fd)
 			if (buf_rd <= 0)
 				break ;
 		}
+		line[i++] = buf[buf_pos++];
 		if (line[i - 1] == '\n')
 			break ;
-		line[i] = buf[buf_pos++];
-		i++;
 	}
 	line[i] = '\0';
 	if (i == 0)
